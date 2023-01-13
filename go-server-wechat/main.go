@@ -109,16 +109,14 @@ func main() {
 			} else {
 				// 创建一个用户
 				dao.CreateUser(key, publicMsg.FromUserName)
-
-				// rt,t := datasource.GetRedisByString("access_token")
-				// if rt == true {
-				// 	bot.GencQr(t, key)
-				// } else {
-				// 	t = bot.GetWxKey()
-				// 	datasource.SetRedisByString("access_token", t,  7000 * time.Second)
-				// 	bot.GencQr(t, key)
-				// }
-				bot.GencQr("64_zE6Vk4GqXxpuP9MR9N-RF8zemqsExwr7qjREMRr1mRd6CHbpNcqxuxenR2DMvAZmTkNleQSs310CEnbtjLK-dfgoNuDrQ46ekCNZ8jSARPhr5C_xPiIOKGDUf3kABBjAFALMM", key)
+				rt, t := datasource.GetRedisByString("qer_k")
+				if rt == true {
+					bot.GencQr(t, key)
+				} else {
+					t = bot.GetWxKey()
+					datasource.SetRedisByString("qer_k", t, 7000*time.Second)
+					bot.GencQr(t, key)
+				}
 			}
 			datasource.SetRedisByString(key, value, 5*time.Minute)
 			replyText := formatPbTxtMsg(&publicMsg, fmt.Sprintf("您好,%v: %v ,时效5分钟.感谢使用.", desc, key))
