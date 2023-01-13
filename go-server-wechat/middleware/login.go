@@ -30,16 +30,16 @@ func Authenticator(c *gin.Context) (interface{}, error) {
 	// 微信小程序登录 方式
 	if loginVals.LoginType == "wx_app" {
 		openid := getWXOpen(loginVals.Code, loginVals.NickName)
-		userInfo, st := dao.GetUserInfoByPbOpenId("", openid, "")
+		userInfo, st := dao.GetUserInfoByPbOpenId("", openid, "", "")
 		if st == 1 {
 			loginId = userInfo.Id
 			loginStatus = true
 		}
 	} else {
 		// 体验码 、登录指令 登录方式
-		t, _ := datasource.GetRedisByString(loginId)
+		t, id := datasource.GetRedisByString(loginId)
 		if t == true {
-			userInfo, st := dao.GetUserInfoByPbOpenId("", "", loginId)
+			userInfo, st := dao.GetUserInfoByPbOpenId("", "", id, "")
 			if st != -1 {
 				loginStatus = true
 				if st == 1 {
@@ -84,14 +84,15 @@ func getWXOpen(code string, nickName string) string {
 
 func handleLoginResponse(c *gin.Context, code int, message string, time time.Time) {
 	id := uitls.PaserToken(message, AuthMiddleware)
-	info, ok := dao.GetUserInfoByPbOpenId("", "", id)
+	info, ok := dao.GetUserInfoByPbOpenId("", "", id, "")
 	if ok != 1 {
 		c.JSON(http.StatusUnauthorized, gin.H{"code": http.StatusUnauthorized})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"minikey": message,
 		"code":    http.StatusOK,
-		"info":    info,
+		"info":    &model.User{Id: info.Id},
 	})
 }

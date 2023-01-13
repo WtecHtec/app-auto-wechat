@@ -2,7 +2,9 @@ package uitls
 
 import (
 	"fmt"
+	"serverwechat/dao"
 	"serverwechat/logger"
+	"serverwechat/store"
 
 	"github.com/robfig/cron/v3"
 )
@@ -15,9 +17,14 @@ func InitTimeTask() {
 	// */1 * * * * ? 每1分钟
 	// @every 2s 每2秒
 	// @daily 每天凌晨0点
-	_, ok := c.AddFunc("@daily", func() {
+	// @hourly 每一个小时
+	_, ok := c.AddFunc("@hourly", func() {
 		logger.Logger.Info("任务调度启动")
-
+		for k, v := range store.BOTS {
+			if v.Bot.Alive() == false {
+				dao.UpdateAutoEnable(k, false)
+			}
+		}
 	})
 	if ok != nil {
 		logger.Logger.Error(fmt.Sprintf("任务调度失败 %v", ok))

@@ -34,7 +34,7 @@ func InitRedis() {
 	logger.Logger.Info("初始化redis success")
 }
 
-func SetRedisByString(key string, value int, timeOut time.Duration) bool {
+func SetRedisByString(key string, value string, timeOut time.Duration) bool {
 	err := RDB.Set(ctx, key, value, timeOut).Err()
 	if err != nil {
 		logger.Logger.Error(fmt.Sprintf("redis key %v 设置失败， %v", key, err))

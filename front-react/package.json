@@ -1,0 +1,19 @@
+{
+  "name": "front-react",
+  "version": "0.0.1",
+  "description": "front-react",
+  "private": true,
+  "scripts": {
+    "build": "uflow build",
+    "start": "uflow start",
+    "watch": "uflow watch"
+  },
+  "uflowVersion": "0.0.2",
+  "dependencies": {
+    "antd": "^5.1.4",
+    "axios": "^1.2.2",
+    "react": "^18.2.0",
+    "react-cookies": "^0.1.1",
+    "react-dom": "^18.2.0"
+  }
+}

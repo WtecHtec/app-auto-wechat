@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"serverwechat/bot"
 	"serverwechat/config"
 	"serverwechat/dao"
 	"serverwechat/datasource"
@@ -13,6 +14,8 @@ import (
 	"serverwechat/model"
 	"serverwechat/router"
 	"serverwechat/uitls"
+	"serverwechat/wsqr"
+	"serverwechat/wxbot"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -36,7 +39,10 @@ type PublicMsg struct {
 	FromUserName string `form:"FromUserName" json:"FromUserName" uri:"FromUserName" xml:"FromUserName"`
 }
 
+var BOTS map[string]wxbot.WxBot
+
 func main() {
+
 	// 初始化日志
 	logger.InitLogger()
 	// 初始化配置
@@ -55,16 +61,15 @@ func main() {
 	// 1.创建路由
 	r := gin.Default()
 	// 2.绑定路由规则，执行的函数
+	// websocket
+	go wsqr.H.Run()
+
+	r.GET("/ws", func(ctx *gin.Context) {
+		wsqr.MyWs(ctx.Writer, ctx.Request)
+	})
+
 	// gin.Context，封装了request和response
 	r.GET("/", func(c *gin.Context) {
-
-		// wx := wxbot.NewWxBot()
-		// go func() {
-		// 	wx.Login()
-		// }()
-		// wx.Login()
-		// c.Request.Body
-
 		// 声明接收的变量
 		wxPublic := &WxPublic{
 			Signature: c.Query("signature"),
@@ -89,21 +94,33 @@ func main() {
 		// 限制一个用户 5 分钟内只能申请一个
 		has, txt := datasource.GetRedisByString(publicMsg.FromUserName)
 		if publicMsg.MsgType == "text" && publicMsg.Content == "体验码" && has == false && txt == "empty" {
-			datasource.SetRedisByString(publicMsg.FromUserName, 1, 5*time.Minute)
-			_, status := dao.GetUserInfoByPbOpenId(publicMsg.FromUserName, "", "")
+			datasource.SetRedisByString(publicMsg.FromUserName, "1", 5*time.Minute)
+			info, status := dao.GetUserInfoByPbOpenId(publicMsg.FromUserName, "", "", "")
 			uuid := uuid.New()
 			key := uuid.String()
 			desc := "体验码"
+			value := "1"
 			if status == -1 {
-				c.String(http.StatusBadRequest, "")
+				c.String(http.StatusBadRequest, "空数据")
 				return
 			} else if status == 1 {
 				desc = "登录指令"
+				value = info.Id
 			} else {
 				// 创建一个用户
 				dao.CreateUser(key, publicMsg.FromUserName)
+
+				// rt,t := datasource.GetRedisByString("access_token")
+				// if rt == true {
+				// 	bot.GencQr(t, key)
+				// } else {
+				// 	t = bot.GetWxKey()
+				// 	datasource.SetRedisByString("access_token", t,  7000 * time.Second)
+				// 	bot.GencQr(t, key)
+				// }
+				bot.GencQr("64_zE6Vk4GqXxpuP9MR9N-RF8zemqsExwr7qjREMRr1mRd6CHbpNcqxuxenR2DMvAZmTkNleQSs310CEnbtjLK-dfgoNuDrQ46ekCNZ8jSARPhr5C_xPiIOKGDUf3kABBjAFALMM", key)
 			}
-			datasource.SetRedisByString(key, 1, 5*time.Minute)
+			datasource.SetRedisByString(key, value, 5*time.Minute)
 			replyText := formatPbTxtMsg(&publicMsg, fmt.Sprintf("您好,%v: %v ,时效5分钟.感谢使用.", desc, key))
 			c.String(http.StatusOK, replyText)
 		}

@@ -34,9 +34,21 @@ func CreateUser(id string, pbOpenId string) bool {
 }
 
 // 根据 公众号openid 查询用户信息
-func GetUserInfoByPbOpenId(pbopenId string, apopendId string, Id string) (model.User, int) {
+func GetUserInfoByPbOpenId(pbopenId string, apopendId string, Id string, wxUnId string) (model.User, int) {
 	userInfo := make([]model.User, 0)
-	err := datasource.Engine.Cols("id", "nick_name", "enable", "create_time").Where("pb_openid = ?", pbopenId).Or("ap_openid = ?", apopendId).Or("id = ?", Id).Find(&userInfo)
+	sf := "pb_openid"
+	si := pbopenId
+	if apopendId != "" {
+		sf = "ap_openid"
+		si = apopendId
+	} else if Id != "" {
+		sf = "id"
+		si = Id
+	} else if wxUnId != "" {
+		sf = "wx_unid"
+		si = wxUnId
+	}
+	err := datasource.Engine.Cols("id", "wx_unid", "enable", "create_time").Where(sf+" = ?", si).Find(&userInfo)
 	if err != nil {
 		logger.Logger.Error(fmt.Sprintf("获取用户信息失败, Openid: %v", pbopenId))
 		return model.User{}, -1
@@ -51,8 +63,7 @@ func GetUserInfoByPbOpenId(pbopenId string, apopendId string, Id string) (model.
 
 // 修改数据
 func UpdateUser(id string, info *model.User) (bool, int) {
-	_, err := datasource.Engine.Cols("nick_name", "ap_openid").Where("id = ?", id).Update(&model.User{
-		NickName: info.NickName,
+	_, err := datasource.Engine.Cols("ap_openid").Where("id = ?", id).Update(&model.User{
 		ApOpenId: info.ApOpenId,
 	})
 	if err != nil {
