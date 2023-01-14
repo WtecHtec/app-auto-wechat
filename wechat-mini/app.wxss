@@ -1,0 +1,13 @@
+page {
+  background-color: #ffffff;
+  padding-bottom: 30rpx;
+}
+
+.-line-clamp {
+  overflow: hidden;
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient:vertical;
+}

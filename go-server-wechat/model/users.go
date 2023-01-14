@@ -4,6 +4,7 @@ import "time"
 
 type User struct {
 	Id         string    `xorm:"varchar(64) pk notnull unique 'id' comment('用户id')"`
+	NickName   string    `xorm:"varchar(255)  'nick_name' comment('微信登录标识')" json:"nick_name"`
 	WxUnid     string    `xorm:"varchar(255)  'wx_unid' comment('微信登录标识')" json:"wx_unid"`
 	PbOpenId   string    `xorm:"varchar(255)  'pb_openid' comment('公众号用户openid')" json:"pb_openid"`
 	ApOpenId   string    `xorm:"varchar(255)  'ap_openid' comment('小程序用户openid')" json:"ap_openid"`

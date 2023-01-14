@@ -5,6 +5,7 @@ type login struct {
 	Code      string `form:"code" json:"code" binding:"required"`
 	NickName  string `form:"nickName" json:"nickName"`
 	LoginType string `form:"loginType" json:"login_type"`
+	Id        string `form:"id" json:"id"`
 }
 
 // type User struct {

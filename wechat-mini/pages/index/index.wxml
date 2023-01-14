@@ -1,0 +1,56 @@
+<loading wx:if="{{pageStatus === -1}}"  type="col" />
+<empty wx:elif="{{pageStatus === 1}}" type="1" marginTop="200"  descr="糟糕，有bug！！">
+  <ui-button bindclick="bindReJoin" text="重进" size="{{28}}" width="336rpx" height="84rpx" radius="100rpx" background="#fff" margin="64rpx 0" borderColor="#12c194" color="#12c194"/>
+</empty>
+<empty wx:elif="{{pageStatus === 2}}" type="2" marginTop="200"  descr="您没有授权哦！"> 
+	<ui-button bindclick="bindRight" text="点击授权" size="{{28}}" width="336rpx" height="84rpx" radius="100rpx" background="#fff" margin="64rpx 0" borderColor="#12c194" color="#12c194"/>
+</empty>
+<empty wx:elif="{{pageStatus === 3}}" type="3" marginTop="200"  >
+  <view class="fui-page__desc">  <fui-copy-text direction="bottom" text="*更多功能,前往PC端.复制链接"  value="https://sr7.top/auto-front"></fui-copy-text></view>
+</empty>
+<empty wx:elif="{{pageStatus === 5}}" type="5" marginTop="200"  descr="咱累了！"/>
+<view wx:else class="fui-page__bd">
+  <view class="fui-page__desc"> <fui-copy-text  direction="bottom" text="*更多功能,前往PC端.复制链接"  value="https://sr7.top/auto-front"></fui-copy-text></view>
+  <fui-form id="form" top="24">
+    <fui-form-item label="状态" padding="28rpx 24rpx 8rpx">
+        <view wx:if="{{fromData.Enable}}">
+          <fui-spin style=" margin-right: 8rpx;"><view class="fui-loading"></view></fui-spin> <fui-text text="运行中" type="success"></fui-text>
+        </view>
+        <view wx:else style="width: 140rpx;" bindtap="bubble">
+          <fui-text text="离线" type="danger" style="margin-right: 8rpx;" ></fui-text> <fui-icon name="info" size="40"></fui-icon> 
+        </view>
+    </fui-form-item>
+    <fui-form-item label="开启自动" padding="28rpx 24rpx 8rpx" >
+      <fui-switch  scaleRatio="0.7" checked="{{fromData.auto_reply}}" bindchange="bindFromDataChange" data-prop="auto_reply"></fui-switch>
+    </fui-form-item>
+    <view style="visibility: {{ fromData.auto_reply ? 'visible' : 'hidden' }};">
+      <fui-form-item label="群@回复" padding="28rpx 24rpx 8rpx" >
+        <fui-switch  scaleRatio="0.7" checked="{{fromData.auto_reply_group}}" bindchange="bindFromDataChange" data-prop="auto_reply_group"></fui-switch>
+      </fui-form-item>
+      <fui-form-item label="回复文案" padding="28rpx 24rpx 8rpx">
+        <fui-textarea bindblur="bindFromDataChange" data-prop="auto_desc" isCounter placeholder="自动回复文案" model:value="{{fromData.auto_desc}}"></fui-textarea>
+      </fui-form-item>
+      <fui-form-item label="机器人">
+        <fui-radio-group value="{{fromData.auto_bot}}" bindchange="bindFromDataChange" data-prop="auto_bot">
+          <fui-label>
+            <fui-radio value="nobot"></fui-radio>
+            <fui-text size="28" text="无" padding="0 30rpx 0 16rpx"></fui-text>
+          </fui-label>
+          <fui-label margin="32rpx 0 0">
+            <fui-radio value="tuling"></fui-radio>
+            <fui-text size="28" text="图灵" padding="0 16rpx"></fui-text>
+          </fui-label>
+          <fui-label margin="32rpx 0 0">
+            <fui-radio value="chatgpt" disabled></fui-radio>
+            <fui-text size="28" text="ChatGPT" padding="0 16rpx" color="#666666"></fui-text>
+          </fui-label>
+        </fui-radio-group>
+      </fui-form-item>
+      <fui-form-item label="图灵key" padding="28rpx 24rpx 8rpx">
+        <fui-textarea bindblur="bindFromDataChange" data-prop="tuling_api_key" isCounter placeholder="图灵API_key" model:value="{{fromData.tuling_api_key}}"></fui-textarea>
+      </fui-form-item>
+    </view>
+  </fui-form>
+
+  <fui-fab  position="left" custom bindclick="fabClick" >  <fui-icon name="scan"  color="#fff"></fui-icon></fui-fab>
+</view>

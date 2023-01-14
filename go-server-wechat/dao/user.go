@@ -48,7 +48,7 @@ func GetUserInfoByPbOpenId(pbopenId string, apopendId string, Id string, wxUnId 
 		sf = "wx_unid"
 		si = wxUnId
 	}
-	err := datasource.Engine.Cols("id", "wx_unid", "enable", "create_time").Where(sf+" = ?", si).Find(&userInfo)
+	err := datasource.Engine.Cols("id", "wx_unid", "ap_openid", "enable", "create_time").Where(sf+" = ?", si).Find(&userInfo)
 	if err != nil {
 		logger.Logger.Error(fmt.Sprintf("获取用户信息失败, Openid: %v", pbopenId))
 		return model.User{}, -1
@@ -63,8 +63,9 @@ func GetUserInfoByPbOpenId(pbopenId string, apopendId string, Id string, wxUnId 
 
 // 修改数据
 func UpdateUser(id string, info *model.User) (bool, int) {
-	_, err := datasource.Engine.Cols("ap_openid").Where("id = ?", id).Update(&model.User{
+	_, err := datasource.Engine.Cols("ap_openid", "nick_name").Where("id = ?", id).Update(&model.User{
 		ApOpenId: info.ApOpenId,
+		NickName: info.NickName,
 	})
 	if err != nil {
 		logger.Logger.Error(fmt.Sprintf("更新用户信息失败, Openid: %v, %v", id, err))

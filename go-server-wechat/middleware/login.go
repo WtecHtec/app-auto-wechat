@@ -27,13 +27,29 @@ func Authenticator(c *gin.Context) (interface{}, error) {
 	}
 	loginId := loginVals.Code
 	loginStatus := false
+	fmt.Println("loginVals==", loginVals)
 	// 微信小程序登录 方式
-	if loginVals.LoginType == "wx_app" {
+	if loginVals.LoginType == "wx_app" && loginVals.Code != "" {
 		openid := getWXOpen(loginVals.Code, loginVals.NickName)
-		userInfo, st := dao.GetUserInfoByPbOpenId("", openid, "", "")
-		if st == 1 {
-			loginId = userInfo.Id
-			loginStatus = true
+		fmt.Println("loginVals== openid", openid)
+		if loginVals.Id == "" {
+			userInfo, st := dao.GetUserInfoByPbOpenId("", openid, "", "")
+			if st == 1 {
+				loginId = userInfo.Id
+				loginStatus = true
+			}
+		} else {
+			userInfo, st := dao.GetUserInfoByPbOpenId("", "", loginVals.Id, "")
+			if st == 1 && userInfo.ApOpenId == openid {
+				loginId = userInfo.Id
+				loginStatus = true
+			} else if st == 1 && userInfo.ApOpenId == "" {
+				b, _ := dao.UpdateUser(loginVals.Id, &model.User{ApOpenId: openid, NickName: loginVals.NickName})
+				if b == true {
+					loginId = userInfo.Id
+					loginStatus = true
+				}
+			}
 		}
 	} else {
 		// 体验码 、登录指令 登录方式

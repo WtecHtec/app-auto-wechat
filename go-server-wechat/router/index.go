@@ -30,7 +30,9 @@ func InitRouter(r *gin.Engine) {
 	// JWT中间件
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
-		auth.POST("/check", func(c *gin.Context) {})
+		auth.POST("/check", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"code": 200})
+		})
 
 		auth.GET("/getautoconfig", func(ctx *gin.Context) {
 			tokenString := ctx.GetHeader("authorization")

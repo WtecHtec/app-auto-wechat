@@ -1,0 +1,41 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/logs/logs"
+  ],
+  "usingComponents": {
+    "loading": "/components/loading/index",
+    "empty": "/components/empty/index",
+
+    "ui-button": "/components/ui-button/index",
+    "fui-fab": "/components/firstui/fui-fab/fui-fab",
+
+    "fui-text": "/components/firstui/fui-text/fui-text",
+    "fui-copy-text": "/components/firstui/fui-copy-text/fui-copy-text",
+
+    "fui-bubble-box": "/components/firstui/fui-bubble-box/fui-bubble-box",
+
+    "fui-icon": "/components/firstui/fui-icon/fui-icon",
+    "fui-spin": "/components/firstui/fui-spin/fui-spin",
+
+    "fui-tag": "/components/firstui/fui-tag/fui-tag",
+    "fui-textarea": "/components/firstui/fui-textarea/fui-textarea",
+
+    "fui-form":"components/firstui/fui-form/fui-form",
+    "fui-form-item": "/components/firstui/fui-form-item/fui-form-item",
+    
+    "fui-switch": "/components/firstui/fui-switch/fui-switch",
+    
+    "fui-radio-group": "/components/firstui/fui-radio-group/fui-radio-group",
+    "fui-radio": "/components/firstui/fui-radio/fui-radio"
+
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Weixin",
+    "navigationBarTextStyle": "black"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

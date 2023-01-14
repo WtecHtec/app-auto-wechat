@@ -215,9 +215,8 @@ function Home() {
               <Button type="link" onClick={ ()=> handleWxLogin()}>登录</Button></>
             }
           </Form.Item>
-          <Form.Item name="auto_desc_qr" label={ <Tooltip title={ ()=> <Image width={200} src={`${Base_Url}public/${cookie.load('minip')}.png`}></Image>}>
-                <span>绑定微信小程序 <InfoCircleOutlined style={{ color: '#66666 !important',}} /></span>
-              </Tooltip> }>
+          <Form.Item name="auto_desc_qr" label="绑定微信小程序">
+              <Image width={200} src={`${Base_Url}public/${cookie.load('minip')}.png`}></Image>
           </Form.Item>
           <Form.Item label="自动回复" name="auto_reply" valuePropName="checked">
             <Switch  onChange={ (checked)=>  onChange(checked)}/>

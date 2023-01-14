@@ -47,7 +47,7 @@ func GencQr(attoken string, id string) {
 	resp, err :=
 		client.R().EnableTrace().SetBody([]byte(
 			fmt.Sprintf(`{
-			"path":"page/index?id=%v",
+			"path":"/page/index?id=%v",
 			"width":430
 		 } `, id))).Post(GEN_QR + attoken)
 	if err != nil {

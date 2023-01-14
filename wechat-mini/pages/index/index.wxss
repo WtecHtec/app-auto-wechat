@@ -1,0 +1,20 @@
+.fui-btn__box {
+  margin: 12rpx 30rpx 0;
+}
+
+.fui-page__desc {
+  margin-top: 24rpx;
+  color: #B2B2B2;
+  text-align: left;
+  font-size: 28rpx;
+  font-weight: 400;
+  word-break: break-all;
+}
+
+.fui-loading {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  border: 2px solid #465CFF;
+  border-left-color: transparent;
+}
