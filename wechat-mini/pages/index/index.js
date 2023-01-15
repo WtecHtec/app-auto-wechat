@@ -1,4 +1,6 @@
-import {postCheckLogin, getLoginCode, postLogin, getUserInfo, postUserInfo, postUpdateUserInfo } from '../servers/login'
+import {postCheckLogin, getLoginCode, postLogin,
+   getUserInfo, postUserInfo, postUpdateUserInfo,
+   checkScanCode, scanCode } from '../servers/login'
 import { setStorage } from '../../utils/util';
 import { USERINFO_KEY, MINIKET_KEY } from '../../utils/storage-keys'
 import { PAGE_STATUS, RE_OPT } from '../../utils/config'
@@ -46,7 +48,9 @@ Page({
 		if (!err && res && res.code === 200) {
       setStorage(MINIKET_KEY, res.minikey)
       this._postUserInfo();
-		}
+		} else {
+      this.setData({ pageStatus: PAGE_STATUS.error })
+    }
 	},
 	bindRight() {
 		this.optNums += 1 
@@ -74,8 +78,32 @@ Page({
   fabClick() {
     wx.scanCode({
       onlyFromCamera: true,
-      success (res) {
+      async success (res) {
         console.log(res)
+        const { result } = res
+        if (result) {
+          const [err,] = await checkScanCode(result)
+          if (!err) {
+            wx.showModal({
+              content: '是否登录?',
+              success (res) {
+                if (res.confirm) {
+                  console.log('用户点击确定')
+                  scanCode(result)
+                } else if (res.cancel) {
+                  console.log('用户点击取消')
+                }
+              }
+            })
+          } else {
+            wx.showToast({
+              title: '确认信息失败',
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        }
+        
       }
     })
   },

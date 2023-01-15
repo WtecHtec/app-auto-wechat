@@ -91,7 +91,7 @@ export function postCheckLogin() {
  * 获取用户信息
  * @returns 
  */
- export function postUserInfo() {
+export function postUserInfo() {
 	return Request('/auth/getautoconfig', '', 'GET');
 }
 
@@ -99,6 +99,25 @@ export function postCheckLogin() {
  * 完善用户信息
  * @returns 
  */
- export function postUpdateUserInfo(info) {
+export function postUpdateUserInfo(info) {
 	return Request('/auth/updateautoconfig', { ...info });
 }
+
+/**
+ * 检查二维码
+ * @param {*} singcode 
+ * @returns 
+ */
+export function checkScanCode(singcode) {
+  return Request(`/auth/checkscancode?singcode=${singcode}`, '', 'GET');
+}
+
+/**
+ * 二维码登录
+ * @param {*} singcode 
+ * @returns 
+ */
+ export function scanCode(singcode) {
+  return Request(`/auth/scancode?singcode=${singcode}`, '', 'GET');
+}
+

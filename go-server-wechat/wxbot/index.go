@@ -48,9 +48,7 @@ func (w *WxBot) ConsoleQrCode(uuid string) {
 	w.ws.WriteMessage(websocket.TextMessage, data_b)
 }
 func (w *WxBot) Login() {
-
 	bot := openwechat.DefaultBot(openwechat.Desktop)
-	w.Bot = *bot
 	bot.UUIDCallback = w.ConsoleQrCode
 	bot.MessageHandler = func(msg *openwechat.Message) {
 		fmt.Println("接收信息===：", msg.Content, store.BOTS[w.cId].Auto)
@@ -98,15 +96,15 @@ func (w *WxBot) Login() {
 			})
 			// 绑定全局
 			// fmt.Println("store.BOTS[w.cId]==", store.BOTS[w.cId])
-			if store.BOTS[w.cId] == nil {
-				store.BOTS[w.cId] = &store.WxBot{
-					Id:  w.cId,
-					Bot: &w.Bot,
-				}
-			} else {
-				// fmt.Println("store.BOTS[w.cId]== 1111")
-				store.BOTS[w.cId].Bot = &w.Bot
-			}
+			// if store.BOTS[w.cId] == nil {
+			// 	store.BOTS[w.cId] = &store.WxBot{
+			// 		Id:  w.cId,
+			// 		Bot: &w.Bot,
+			// 	}
+			// } else {
+			// 	// fmt.Println("store.BOTS[w.cId]== 1111")
+			// 	store.BOTS[w.cId].Bot = &w.Bot
+			// }
 			dao.UpdateAutoEnable(w.cId, true)
 			w.ws.WriteMessage(websocket.TextMessage, data_b)
 		} else {
@@ -120,6 +118,16 @@ func (w *WxBot) Login() {
 		}
 	}
 	bot.Login()
+	if store.BOTS[w.cId] == nil {
+		store.BOTS[w.cId] = &store.WxBot{
+			Id:  w.cId,
+			Bot: bot,
+		}
+	} else {
+		// fmt.Println("store.BOTS[w.cId]== 1111")
+		store.BOTS[w.cId].Bot = bot
+	}
+	w.Bot = *bot
 	bot.Block()
 }
 

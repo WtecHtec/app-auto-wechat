@@ -10,12 +10,14 @@ import {
 } from 'antd';
 import { InfoCircleOutlined, SyncOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import cookie from 'react-cookies'
-import { check, login, getAutoConfig, updateAutoConfig } from './Api'
+import { check, login, getAutoConfig, updateAutoConfig, getScanCode } from './Api'
 const { TextArea } = Input;
-const Base_Url =  'http://127.0.0.1:4299/'
+// const Base_Url =  'https://sr7.top/wx/'
+const Base_Url = 'http://127.0.0.1:4299/'
 
 const PB_QR = `${Base_Url}public/pb-qrcode.png`
 let ws = null
+let timer = null
 function Home() {
   let codeSin = ''
 
@@ -39,17 +41,21 @@ function Home() {
   const [isModalOpen, setIsModalOpen ] = useState(false)
   const [isScan, setIsScan ] = useState(false)
   const [qrImg, setQrImg ] = useState("")
+
+  const [loginQrCode, setLoginQrCode] = useState("test")
+  const [qrCodeStatue, setQrCodeStatus] = useState("active")
   
   useEffect(() => {
     try {
       if (!ws) {
+        // ws = new WebSocket("wss://sr7.top/autows");
+        
         ws = new WebSocket("ws://127.0.0.1:4299/ws");
         ws.onopen = function (res) {
-          console.log('onopen: ws 连接', res)
+          console.log('onopen: ws 连接')
         };
         ws.onmessage = function (e) {
             const msg = JSON.parse(e.data);
-            console.log('onmessage==ws', msg)
             switch(msg.type) {
               case 'wxcodeqr': 
                   if (msg.status === 0) {
@@ -68,11 +74,11 @@ function Home() {
                   } 
                 break
               default:
-                console.log('onmessage==ws', msg)
+                console.log('onmessage==ws',)
             }
         };
-        ws.onerror = function () {
-          console.error('onerror: ws 连接失败')
+        ws.onerror = function (err) {
+          console.error('onerror: ws 连接失败', err)
         };
       } 
     } catch (error) {
@@ -82,7 +88,6 @@ function Home() {
 
 
   const sendMsg = (msg) => {
-    console.log('msg===', msg)
     if (!ws) return
     const data = JSON.stringify(msg);
     ws.send(data);
@@ -98,13 +103,13 @@ function Home() {
       setPageStatus('logined')
     }).catch(()=> {
       console.log('登录失效')
+      setPageStatus('login')
     })
   }, [])
 
   useEffect(()=> {
     if (pageStatus ===  'logined') {
       getAutoConfig().then((res) => {
-        console.log( 'getAutoConfig', res)
         const { data } = res;
         const info = {
           enable: data.Enable,
@@ -148,12 +153,48 @@ function Home() {
         } else {
           showErrorMsg('体验码\登录指令错误')
         }
-        console.log('handleLogin===', res)
       }).catch(()=> {
         showErrorMsg('体验码\登录指令错误')
+        setQrCodeStatus('expired')
       })
     }
   } 
+
+  const handleChangeLogin = (loginType) => {
+    setLoginType(loginType)
+    setQrCodeStatus('active')
+    timer && clearTimeout(timer),timer = null;
+    if (loginType === 'qr') {
+      refreshQrCode()
+    }
+  }
+
+  const refreshQrCode = (isout) => {
+    getScanCode(isout).then( res => {
+      const { code, singcode } = res.data
+      if (code === 200) {
+        setLoginQrCode(singcode)
+      } else if (code === 201) {
+        setQrCodeStatus("actived")
+      } else  if (code === 404) {
+        setQrCodeStatus('expired')
+        timer && clearInterval(timer), timer = null;
+        return
+      } else if (code === 202) {
+        timer && clearInterval(timer), timer = null;
+        setQrCodeStatus("loading")
+        codeSin = singcode
+        handleLogin()
+        return
+      }
+      !timer && (timer = setInterval(() => {
+        refreshQrCode(singcode)
+      }, 2 * 1000))
+
+    }).catch(()=> {
+      setQrCodeStatus('expired')
+    })
+  }
 
   const CodeLogin = ()=> {
     return <div className="App-instructions">
@@ -163,14 +204,22 @@ function Home() {
           <Button type="primary" onClick={ ()=> handleLogin()}>登录</Button>
       </Input.Group>
       <span style={ { marginTop: '24px', color: '#333333', }}> *扫码关注公众号,发送"体验码"获取体验码\登录指令, 
-        <Button type="link" onClick={ ()=> setLoginType('qrcode')}>扫码登录</Button></span>
+        <Button type="link" onClick={ ()=> handleChangeLogin('qr') }>扫码登录</Button></span>
     </div>
   }
 
   const QrLogin = () => {
     return <div className="App-instructions">
-      <QRCode value="5555"  style={{margin: 'auto', }} status="expired" onRefresh={() => console.log('refresh')} />
-      <span style={ { marginTop: '24px', color: '#333333', }}> *微信小程序扫码, <Button type="link" onClick={ ()=> setLoginType('code')}>切换登录方式</Button></span>
+      <div className="wx-qr m-auto">
+        <QRCode value={loginQrCode}  size={200}  style={{margin: 'auto', }} status={qrCodeStatue} onRefresh={() => console.log('refresh')} />
+        { 
+          qrCodeStatue === 'actived' && <div  className="wx-qr-drawer wx-qr-con">
+                <div> 扫码成功</div>
+              </div>
+            }
+      </div>
+      
+      <span style={ { marginTop: '24px', color: '#333333', }}> *微信小程序扫码, <Button type="link" onClick={ ()=> handleChangeLogin('code')}>切换登录方式</Button></span>
     </div>
   }
   
@@ -200,9 +249,10 @@ function Home() {
   }
 
 
+
   const Setting = () => {
     return  <div style={{padding: '24px 10% 0 0'}}>
-        <span> *如设置没有效果,可尝试多次刷新登录 </span>
+        <span> *如设置没有效果,可 1.重新触发自动回复设置 2.尝试多次刷新登录</span>
         <Form form={settingForm} labelCol={{ span: 4 }} initialValues={ settingConfig } layout="horizontal" onFinish={onSettingFinish}>
           <Form.Item label="登录状态"  name="enable">
             { settingConfig.enable 
@@ -219,7 +269,7 @@ function Home() {
               <Image width={200} src={`${Base_Url}public/${cookie.load('minip')}.png`}></Image>
           </Form.Item>
           <Form.Item label="自动回复" name="auto_reply" valuePropName="checked">
-            <Switch  onChange={ (checked)=>  onChange(checked)}/>
+            <Switch disabled={!settingConfig.enable}  onChange={ (checked)=>  onChange(checked)}/>
           </Form.Item>
           <div style={ { visibility: settingShow ? 'visible' : 'hidden'}}>
             <Form.Item label="群@自动回复" name="auto_reply_group" valuePropName="checked">

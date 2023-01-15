@@ -12,4 +12,6 @@ type User struct {
 	CreateTime time.Time `xorm:"DateTime notnull created  'create_time' comment('创建时间')"`
 	UpdateTime time.Time `xorm:"DateTime notnull updated  'update_time' comment('更新时间')"`
 	OpenId     string    `json:"openid"`
+	Errmsg     string    `json:"errmsg"`
+	Errcode    int32     `json:"errcode"`
 }

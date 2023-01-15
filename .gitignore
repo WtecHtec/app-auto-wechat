@@ -8,3 +8,4 @@ upload
 test
 *.tar
 node_modules
+dist

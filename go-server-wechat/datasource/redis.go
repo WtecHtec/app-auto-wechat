@@ -56,3 +56,17 @@ func GetRedisByString(key string) (bool, string) {
 		return true, count
 	}
 }
+
+func DelRedisByString(key string) (bool, int64) {
+	count, err := RDB.Del(ctx, key).Result()
+	if err == redis.Nil {
+		fmt.Println("key2 does not exist")
+		logger.Logger.Info(fmt.Sprintf("redis key %v不存在", key))
+		return false, 0
+	} else if err != nil {
+		logger.Logger.Error(fmt.Sprintf("redis key %v 获取失败 %v", key, err))
+		return false, 0
+	} else {
+		return true, count
+	}
+}

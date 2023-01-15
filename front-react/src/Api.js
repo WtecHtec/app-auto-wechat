@@ -32,6 +32,11 @@ export function updateAutoConfig(param) {
   return httpRequest.post('/auth/updateautoconfig', param)
 }
 
+/** 获取登录二维码 */
+export function getScanCode(type) {
+  return httpRequest.get(`/qr${type ? `?singcode=${type}` : '' }`)
+}
+
 
 
 

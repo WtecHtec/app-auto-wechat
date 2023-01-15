@@ -18,12 +18,17 @@ func InitTimeTask() {
 	// @every 2s 每2秒
 	// @daily 每天凌晨0点
 	// @hourly 每一个小时
-	_, ok := c.AddFunc("@hourly", func() {
+	_, ok := c.AddFunc("@every 120s", func() {
 		logger.Logger.Info("任务调度启动")
 		for k, v := range store.BOTS {
-			if v.Bot.Alive() == false {
+			_, err := v.Bot.GetCurrentUser()
+			if err != nil {
+				fmt.Println("退出 ===", err)
 				dao.UpdateAutoEnable(k, false)
 			}
+			// if v.Bot.Alive() == false {
+			// 	dao.UpdateAutoEnable(k, false)
+			// }
 		}
 	})
 	if ok != nil {
