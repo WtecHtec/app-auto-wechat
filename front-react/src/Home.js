@@ -113,7 +113,7 @@ function Home() {
         const { data } = res;
         const info = {
           enable: data.Enable,
-          auto_reply: data.auto_reply, 
+          auto_reply: data.Enable ? data.auto_reply : false, 
           auto_reply_group: data.auto_reply_group,
           auto_bot: data.auto_bot,
           auto_desc: data.auto_desc,
@@ -127,7 +127,8 @@ function Home() {
         setSettingConfig({
           ...info
         })
-        setSettingShow(data.auto_reply)
+        setSettingShow( data.Enable ? data.auto_reply : false)
+
       })
     }
   }, [pageStatus])
