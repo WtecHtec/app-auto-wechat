@@ -12,8 +12,8 @@ import { InfoCircleOutlined, SyncOutlined, CloseCircleOutlined } from '@ant-desi
 import cookie from 'react-cookies'
 import { check, login, getAutoConfig, updateAutoConfig, getScanCode } from './Api'
 const { TextArea } = Input;
-// const Base_Url =  'https://sr7.top/wx/'
-const Base_Url = 'http://127.0.0.1:4299/'
+const Base_Url =  'https://sr7.top/wx/'
+// const Base_Url = 'http://127.0.0.1:4299/'
 
 const PB_QR = `${Base_Url}public/pb-qrcode.png`
 let ws = null
@@ -48,9 +48,9 @@ function Home() {
   useEffect(() => {
     try {
       if (!ws) {
-        // ws = new WebSocket("wss://sr7.top/autows");
+        ws = new WebSocket("wss://sr7.top/autows");
         
-        ws = new WebSocket("ws://127.0.0.1:4299/ws");
+        // ws = new WebSocket("ws://127.0.0.1:4299/ws");
         ws.onopen = function (res) {
           console.log('onopen: ws 连接')
         };
@@ -212,7 +212,7 @@ function Home() {
   const QrLogin = () => {
     return <div className="App-instructions">
       <div className="wx-qr m-auto">
-        <QRCode value={loginQrCode}  size={200}  style={{margin: 'auto', }} status={qrCodeStatue} onRefresh={() => console.log('refresh')} />
+        <QRCode value={loginQrCode}  size={200}  style={{margin: 'auto', }} status={qrCodeStatue} onRefresh={() => handleChangeLogin('qr')} />
         { 
           qrCodeStatue === 'actived' && <div  className="wx-qr-drawer wx-qr-con">
                 <div> 扫码成功</div>

@@ -19,8 +19,8 @@ function info() {
 }
 // 2. 创建axios对象，配置默认配置
 const httpRequest = axios.create({
-    // baseURL: 'https://sr7.top/wx/', // api的base_url
-    baseURL: 'http://127.0.0.1:4299/', // api的base_url
+    baseURL: 'https://sr7.top/wx/', // api的base_url
+    // baseURL: 'http://127.0.0.1:4299/', // api的base_url
     timeout: 15000 // 请求超时时间
 
 })

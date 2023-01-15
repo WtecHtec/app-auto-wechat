@@ -49,7 +49,8 @@ Page({
       setStorage(MINIKET_KEY, res.minikey)
       this._postUserInfo();
 		} else {
-      this.setData({ pageStatus: PAGE_STATUS.error })
+      this.setData({ pageStatus: PAGE_STATUS.normal })
+      this.loginStatus = false
     }
 	},
 	bindRight() {
@@ -116,16 +117,18 @@ Page({
     })
   },
   bindFromDataChange(e) {
+   
     console.log(e)
     const { prop } = e.currentTarget.dataset
     const { value } = e.detail
-    if (cache === prop) return
-    cache = prop
+    if (cache === `${prop}-${value}`) return
+    cache = `${prop}-${value}`
     const upObj = {}
     upObj[`fromData.${prop}`] = value
     this.setData({
       ...upObj
     }, ()=> {
+      if (this.loginStatus === false) return
       postUpdateUserInfo(this.data.fromData)
     })
   }
