@@ -3,6 +3,7 @@ import axios from 'axios'
 import cookie from 'react-cookies'
 import React from 'react';
 import { Modal } from 'antd';
+import { mode, apiUrl } from './config'
 function info() {
     Modal.info({
       title: '系统提示',
@@ -19,7 +20,7 @@ function info() {
 }
 // 2. 创建axios对象，配置默认配置
 const httpRequest = axios.create({
-    baseURL: 'https://sr7.top/wx/', // api的base_url
+    baseURL: apiUrl[mode].api, // api的base_url
     // baseURL: 'http://127.0.0.1:4299/', // api的base_url
     timeout: 15000 // 请求超时时间
 

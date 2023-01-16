@@ -73,6 +73,11 @@ func InitRouter(r *gin.Engine) {
 				ctx.JSON(http.StatusBadRequest, tokenString+"==ID=="+strings.Split(tokenString, "Bearer ")[1])
 				return
 			}
+			_, stid := dao.GetUserInfoByPbOpenId("", "", id, "")
+			if stid == -1 || stid == 0 {
+				ctx.JSON(http.StatusUnauthorized, "-1")
+				return
+			}
 			info, st := dao.GetAutoInfoById(id)
 			if st == -1 {
 				ctx.JSON(http.StatusBadRequest, "-1")
@@ -105,6 +110,11 @@ func InitRouter(r *gin.Engine) {
 			id := uitls.PaserToken(strings.Split(tokenString, "Bearer ")[1], authMiddleware)
 			if id == "" {
 				ctx.JSON(http.StatusBadRequest, tokenString+"==ID=="+strings.Split(tokenString, "Bearer ")[1])
+				return
+			}
+			_, st := dao.GetUserInfoByPbOpenId("", "", id, "")
+			if st == -1 || st == 0 {
+				ctx.JSON(http.StatusUnauthorized, "-1")
 				return
 			}
 			dao.UpdateAuto(id, &autoInfo)

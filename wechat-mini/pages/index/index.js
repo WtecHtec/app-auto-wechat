@@ -77,6 +77,7 @@ Page({
   },
 
   fabClick() {
+    
     wx.scanCode({
       onlyFromCamera: true,
       async success (res) {

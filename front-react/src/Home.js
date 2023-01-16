@@ -11,8 +11,10 @@ import {
 import { InfoCircleOutlined, SyncOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import cookie from 'react-cookies'
 import { check, login, getAutoConfig, updateAutoConfig, getScanCode } from './Api'
+import { mode, apiUrl } from './config'
 const { TextArea } = Input;
-const Base_Url =  'https://sr7.top/wx/'
+const Base_Url = apiUrl[mode].api
+const Ws_Url = apiUrl[mode].ws
 // const Base_Url = 'http://127.0.0.1:4299/'
 
 const PB_QR = `${Base_Url}public/pb-qrcode.png`
@@ -48,7 +50,7 @@ function Home() {
   useEffect(() => {
     try {
       if (!ws) {
-        ws = new WebSocket("wss://sr7.top/autows");
+        ws = new WebSocket( Ws_Url);
         
         // ws = new WebSocket("ws://127.0.0.1:4299/ws");
         ws.onopen = function (res) {
